@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import Model from './model'
 
 export default function Scene(element) {
   const scene = new THREE.Scene()
@@ -63,9 +64,8 @@ export default function Scene(element) {
   })
 
   const cubes = [
-    Cube(THREE, scene, 0, 0x339933, [-1,1,0]),
-    Cube(THREE, scene, 1, 0xFF1133, [1,1,0]),
-    Cube(THREE, scene, 1, 0xFFFFFF, [0,2,0])
+    Cube(THREE, scene, 0, 0x339933, [-2,1,-2]),
+    Cube(THREE, scene, 1, 0xFF1133, [-2,1.5,-2]),
   ]
 
   function spinCubes() {
@@ -76,6 +76,8 @@ export default function Scene(element) {
     })
   }
 
+  const gallery = Model(scene)
+
   // Render loop
   function animate() {
     requestAnimationFrame(animate)
@@ -83,6 +85,10 @@ export default function Scene(element) {
     var delta = clock.getDelta()
 
     controls.update()
+
+    if (gallery) {
+      gallery.updateMixer(delta)
+    }
 
     spinCubes()
 
