@@ -1,6 +1,6 @@
 import './style.css'
-import { setupCounter } from './components/counter.js'
+import Scene from './components/scene.js'
 
 const app = document.querySelector('#app')
 
-setupCounter(document.querySelector('#counter'))
+Scene(app)
