@@ -7,7 +7,7 @@ export default function Scene(element) {
   scene.background = null
 
   const camera = new THREE.PerspectiveCamera(75, app.clientWidth / app.clientHeight, 0.1, 1000)
-  camera.position.set(0,2,2)
+  camera.position.set(0,2,6)
 
   const renderer = new THREE.WebGLRenderer({ alpha: true })
   //renderer.setSize(element.clientWidth, element.clientHeight)
@@ -26,7 +26,7 @@ export default function Scene(element) {
   else document.body.appendChild(renderer.domElement)
 
   const controls = new OrbitControls(camera, renderer.domElement)
-  controls.target.set(0, 2, 1.9)
+  controls.target.set(0, 2, 5.9)
   controls.update()
   // Limit rotation to Y-axis
   controls.minPolarAngle = Math.PI / 2
@@ -56,9 +56,12 @@ export default function Scene(element) {
     const intersects = raycaster.intersectObjects(scene.children, true)
     if (intersects.length > 0) {
       const intersectedObject = intersects[0].object    
-      //console.log(intersectedObject.name)
+      console.log(intersectedObject.name)
 
-      if (intersectedObject.name == "cube0") intersectedObject.spinning = !intersectedObject.spinning
+      if (intersectedObject.name == "doorway") {
+        if (!moving) setNewArea()
+      }
+      else if (intersectedObject.name == "cube0") intersectedObject.spinning = !intersectedObject.spinning
       else if (intersectedObject.name == "cube1") intersectedObject.spinning = !intersectedObject.spinning
     }
   })
@@ -76,7 +79,31 @@ export default function Scene(element) {
     })
   }
 
+  function setNewArea() {
+    if (area == 0) {
+      targetPosition.set(0,2,1)
+      controls.target.set(0, 2, 0.9)
+      area = 1
+    } else {
+      targetPosition.set(0,2,6)
+      controls.target.set(0, 2, 5.9)
+      area = 0
+    }
+
+    moving = true
+  }
+
+  function moveCamera() {
+    camera.position.lerp(targetPosition, 0.02)
+
+    if (camera.position.distanceTo(targetPosition) < 0.01) moving = false
+  }
+
   const gallery = Model(scene)
+
+  let area = 0
+  let moving = false
+  let targetPosition = new THREE.Vector3(0,2,2)
 
   // Render loop
   function animate() {
@@ -91,6 +118,8 @@ export default function Scene(element) {
     }
 
     spinCubes()
+
+    if (moving) moveCamera()
 
     renderer.render(scene, camera)
   }

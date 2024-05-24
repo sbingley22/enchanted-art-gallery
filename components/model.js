@@ -1,6 +1,7 @@
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js'
 import { AnimationMixer, AnimationClip } from 'three'
 import glb from '../assets/gallery.glb?url'
+import Picture from './picture'
 
 const getNodebyName = (node, name) => {
   if (node.name == name) return node
@@ -23,7 +24,7 @@ export default function Model(scene) {
   //Load GLB
   const loader = new GLTFLoader()
   loader.load(glb, function (gltf) {
-    console.log(gltf)
+    //console.log(gltf)
     model = gltf.scene
     scene.add(model)
 
@@ -32,7 +33,9 @@ export default function Model(scene) {
     playAnimationByName("mumIdle")
     playAnimationByName("ravenIdle")
 
-    initializeAnimations()    
+    initializeAnimations()
+
+    Picture(scene)
   })
 
   const initializeAnimations = () => {
