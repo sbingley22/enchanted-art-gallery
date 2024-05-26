@@ -42,7 +42,8 @@ h1 {
   padding: 0;
   box-sizing: border-box;
   text-align: center;
-  background: radial-gradient(circle at center top, #ebcb4d, #2d6722);
+  /* background: radial-gradient(circle at center top, #ebcb4d, #2d6722); */
+  background: radial-gradient(circle at center top, #ebcb4d, #ff0000);
 }
 
 button {

@@ -1,5 +1,6 @@
 import * as THREE from 'three'
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js'
+import { CSS3DRenderer } from 'three/examples/jsm/Addons.js'
 import Model from './model'
 
 export default function Scene(element) {
@@ -25,10 +26,22 @@ export default function Scene(element) {
   if (element) element.appendChild(renderer.domElement)
   else document.body.appendChild(renderer.domElement)
 
+  // For rendering HTML
+  const css3DRenderer = new CSS3DRenderer();
+  css3DRenderer.setSize(window.innerWidth, window.innerHeight);
+  css3DRenderer.domElement.style.position = 'absolute';
+  css3DRenderer.domElement.style.top = 0;
+  css3DRenderer.domElement.style.left = 0;
+  css3DRenderer.domElement.style.pointerEvents = 'none';
+  css3DRenderer.domElement.style.userSelect = 'none';
+
+  if (element) element.appendChild(css3DRenderer.domElement)
+  else document.body.appendChild(css3DRenderer.domElement)
+
+  // View Controls
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.target.set(0, 2, 5.9)
   controls.update()
-  // Limit rotation to Y-axis
   controls.minPolarAngle = Math.PI / 2
   controls.maxPolarAngle = Math.PI / 2
 
@@ -84,19 +97,41 @@ export default function Scene(element) {
       targetPosition.set(0,2,1)
       controls.target.set(0, 2, 0.9)
       area = 1
-    } else {
-      targetPosition.set(0,2,6)
-      controls.target.set(0, 2, 5.9)
-      area = 0
-    }
+      moving = true
 
-    moving = true
+      if (gallery) {
+        setTimeout(()=>{
+          gallery.picturesVisibility(true)
+          gallery.seanBodyVisible()
+          gallery.playAnimationByName("Angry", "sean")
+        }, 1000)
+      }
+      
+    } else if (area == 1) {
+      //targetPosition.set(0,2,6)
+      //controls.target.set(0, 2, 5.9)
+      area = 2
+
+      const bgm = document.querySelector('#bgm')
+      console.log(bgm)
+      bgm.play()
+      dancing = true
+
+      if (gallery) {
+        setTimeout(()=>{
+          gallery.seanVisibility(true)
+          //gallery.picturesVisibility(false)
+          gallery.playAnimationByName("mumStare", "mum")
+          gallery.playAnimationByName("ravenDance", "raven")
+        }, 1000)
+      }
+    }
   }
 
   function moveCamera() {
-    camera.position.lerp(targetPosition, 0.02)
+    camera.position.lerp(targetPosition, 0.05)
 
-    if (camera.position.distanceTo(targetPosition) < 0.01) moving = false
+    if (camera.position.distanceTo(targetPosition) < 0.05) moving = false
   }
 
   const gallery = Model(scene)
@@ -104,6 +139,8 @@ export default function Scene(element) {
   let area = 0
   let moving = false
   let targetPosition = new THREE.Vector3(0,2,2)
+
+  let dancing = false
 
   // Render loop
   function animate() {
@@ -115,6 +152,7 @@ export default function Scene(element) {
 
     if (gallery) {
       gallery.updateMixer(delta)
+      if (dancing) gallery.dancingPictures(delta)
     }
 
     spinCubes()
@@ -122,6 +160,7 @@ export default function Scene(element) {
     if (moving) moveCamera()
 
     renderer.render(scene, camera)
+    css3DRenderer.render(scene, camera);
   }
 
   animate()
